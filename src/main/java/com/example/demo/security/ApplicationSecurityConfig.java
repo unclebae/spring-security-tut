@@ -13,6 +13,9 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
+import static com.example.demo.security.ApplicationUserRole.*;
+import static com.example.demo.security.ApplicationUserRole.STUDENT;
+
 @Configuration
 @EnableWebSecurity
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -44,10 +47,16 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         UserDetails kidouser = User.builder()
                 .username("kido")
                 .password(passwordEncoder.encode("1234")) // password encoder 를 찾기 위한 식별자를 넣어야함, 식별자를 넣어주지 않으면 오류 발생, {noop} 을 추가하면 이를 무시하게 됨.
-                .roles("STUDENT")   // ROLE_STUDENT
+                .roles(STUDENT.name())   // ROLE_STUDENT
                 .build();
 
-        return new InMemoryUserDetailsManager(kidouser);
+        UserDetails lindaUser = User.builder()
+                .username("linda")
+                .password(passwordEncoder.encode("1234"))
+                .roles(ADMIN.name())
+                .build();
+
+        return new InMemoryUserDetailsManager(kidouser, lindaUser);
     }
 
 }
