@@ -1,5 +1,6 @@
 package com.example.demo.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,6 +16,13 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 @Configuration
 @EnableWebSecurity
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public ApplicationSecurityConfig(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -35,15 +43,11 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     protected UserDetailsService userDetailsService() {
         UserDetails kidouser = User.builder()
                 .username("kido")
-                .password("1234") // password encoder 를 찾기 위한 식별자를 넣어야함, 식별자를 넣어주지 않으면 오류 발생, {noop} 을 추가하면 이를 무시하게 됨.
+                .password(passwordEncoder.encode("1234")) // password encoder 를 찾기 위한 식별자를 넣어야함, 식별자를 넣어주지 않으면 오류 발생, {noop} 을 추가하면 이를 무시하게 됨.
                 .roles("STUDENT")   // ROLE_STUDENT
                 .build();
 
         return new InMemoryUserDetailsManager(kidouser);
     }
 
-    @Bean
-    public PasswordEncoder getPasswordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
-    }
 }
